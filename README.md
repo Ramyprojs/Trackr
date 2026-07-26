@@ -14,6 +14,7 @@ Trackr is an AI-augmented project management tool (Linear/Jira-style clone) feat
 - [x] **Phase 0:** Project scaffolding and docker-compose setup
 - [x] **Phase 1:** Core backend architecture, JWT Auth (`/signup`, `/login`, `/me`), Async SQLAlchemy models (User, Workspace, WorkspaceMember, Project, Board), and Workspace/Project CRUD APIs
 - [x] **Phase 2:** Ticket, Sprint, and Comment models with full CRUD, filtering, pagination, and Kanban status transitions (todo → in_progress → in_review → done)
+- [x] **Phase 3:** Celery worker service connected to Redis broker with job dispatch pattern and worker health check endpoint (`/api/v1/health/worker`)
 
 ## Repository Structure
 ```
@@ -41,3 +42,4 @@ Trackr is an AI-augmented project management tool (Linear/Jira-style clone) feat
    - **Frontend:** [http://localhost:3000](http://localhost:3000)
    - **API Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
    - **API Health:** [http://localhost:8000/api/v1/health](http://localhost:8000/api/v1/health)
+   - **Worker Health:** [http://localhost:8000/api/v1/health/worker](http://localhost:8000/api/v1/health/worker)

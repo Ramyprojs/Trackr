@@ -1,7 +1,4 @@
-import sys
-import time
+from app.celery_app import celery_app
 
-print("Celery worker stub initialized.")
 if __name__ == "__main__":
-    while True:
-        time.sleep(3600)
+    celery_app.start(argv=["worker", "--loglevel=info"])

@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import engine, Base
 from app.api.v1.api import api_router
+from app.tasks import ping_worker
 
 # Ensure all models are registered with Base
 import app.models  # noqa: F401
@@ -12,7 +13,6 @@ import app.models  # noqa: F401
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Auto-create tables on startup for simplicity in dev/testing
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
@@ -44,3 +44,13 @@ async def root():
 @app.get("/api/v1/health")
 async def health_check():
     return {"status": "ok", "service": "trackr-backend"}
+
+
+@app.get("/api/v1/health/worker")
+async def worker_health_check():
+    try:
+        task = ping_worker.delay()
+        result = task.get(timeout=3.0)
+        return {"status": "ok", "worker_result": result}
+    except Exception as e:
+        return {"status": "degraded", "error": str(e)}
