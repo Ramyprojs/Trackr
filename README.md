@@ -10,6 +10,10 @@ Trackr is an AI-augmented project management tool (Linear/Jira-style clone) feat
 - **Frontend:** React, Vite, Tailwind CSS v4, TanStack Table
 - **Infrastructure:** Docker Compose
 
+## Features Implemented
+- [x] **Phase 0:** Project scaffolding and docker-compose setup
+- [x] **Phase 1:** Core backend architecture, JWT Auth (`/signup`, `/login`, `/me`), Async SQLAlchemy models (User, Workspace, WorkspaceMember, Project, Board), and Workspace/Project CRUD APIs
+
 ## Repository Structure
 ```
 ├── backend/        # FastAPI application, database models, AI service & Celery tasks
@@ -36,6 +40,3 @@ Trackr is an AI-augmented project management tool (Linear/Jira-style clone) feat
    - **Frontend:** [http://localhost:3000](http://localhost:3000)
    - **API Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
    - **API Health:** [http://localhost:8000/api/v1/health](http://localhost:8000/api/v1/health)
-
----
-*Phase 0 complete: Project scaffolding and docker-compose base.*
