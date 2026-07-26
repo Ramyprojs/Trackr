@@ -15,6 +15,7 @@ Trackr is an AI-augmented project management tool (Linear/Jira-style clone) feat
 - [x] **Phase 1:** Core backend architecture, JWT Auth (`/signup`, `/login`, `/me`), Async SQLAlchemy models (User, Workspace, WorkspaceMember, Project, Board), and Workspace/Project CRUD APIs
 - [x] **Phase 2:** Ticket, Sprint, and Comment models with full CRUD, filtering, pagination, and Kanban status transitions (todo → in_progress → in_review → done)
 - [x] **Phase 3:** Celery worker service connected to Redis broker with job dispatch pattern and worker health check endpoint (`/api/v1/health/worker`)
+- [x] **Phase 4:** Gemini-powered ticket auto-triage (suggesting labels, priority & story points), comment thread summarization, and sprint risk prediction with background task execution
 
 ## Repository Structure
 ```
