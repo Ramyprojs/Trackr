@@ -4,8 +4,14 @@ from sqlalchemy.orm import declarative_base
 
 from app.core.config import settings
 
-# For SQLite testing fallback or PostgreSQL production
 db_url = settings.get_database_url()
+
+# Fallback to SQLite if asyncpg is not installed on host environment (e.g. testing)
+if "asyncpg" in db_url:
+    try:
+        import asyncpg  # noqa: F401
+    except ImportError:
+        db_url = "sqlite+aiosqlite:///./trackr.db"
 
 engine = create_async_engine(
     db_url,

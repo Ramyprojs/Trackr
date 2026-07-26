@@ -11,6 +11,7 @@ from app.core.security import (
 from app.models.user import User
 from app.schemas.auth import UserCreate, UserLogin, UserResponse, Token
 from app.api.deps import get_current_user
+from app.seed import seed_data
 
 router = APIRouter()
 
@@ -40,8 +41,15 @@ async def signup(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 async def login(user_in: UserLogin, db: AsyncSession = Depends(get_db)):
+    # Auto-seed if demo login is attempted and user doesn't exist yet
     result = await db.execute(select(User).where(User.email == user_in.email))
     user = result.scalars().first()
+    
+    if not user and user_in.email == "demo@trackr.dev":
+        await seed_data()
+        result = await db.execute(select(User).where(User.email == user_in.email))
+        user = result.scalars().first()
+
     if not user or not verify_password(user_in.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -51,6 +59,12 @@ async def login(user_in: UserLogin, db: AsyncSession = Depends(get_db)):
 
     access_token = create_access_token(subject=user.id)
     return Token(access_token=access_token, user=UserResponse.model_validate(user))
+
+
+@router.post("/seed")
+async def seed_database():
+    await seed_data()
+    return {"status": "ok", "message": "Database successfully seeded with demo data"}
 
 
 @router.get("/me", response_model=UserResponse)

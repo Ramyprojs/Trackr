@@ -11,7 +11,16 @@ from app.models.ticket import Ticket, Comment, Sprint
 logger = logging.getLogger(__name__)
 
 # Sync Engine for Celery tasks
-sync_db_url = settings.get_database_url().replace("postgresql+asyncpg://", "postgresql://").replace("sqlite+aiosqlite://", "sqlite://")
+raw_url = settings.get_database_url()
+if "asyncpg" in raw_url:
+    try:
+        import psycopg2  # noqa: F401
+        sync_db_url = raw_url.replace("postgresql+asyncpg://", "postgresql://")
+    except ImportError:
+        sync_db_url = "sqlite:///./trackr_sync.db"
+else:
+    sync_db_url = raw_url.replace("sqlite+aiosqlite://", "sqlite://")
+
 sync_engine = create_engine(sync_db_url, echo=False)
 SyncSessionLocal = sessionmaker(bind=sync_engine)
 
@@ -34,7 +43,6 @@ def triage_ticket_task(ticket_id: str) -> dict:
 
         triage_res = ai_service.triage_ticket(ticket.title, ticket.description or "")
 
-        # Merge labels
         existing_labels = set(ticket.labels or [])
         new_labels = list(existing_labels.union(set(triage_res.get("labels", []))))
 
@@ -71,7 +79,6 @@ def summarize_ticket_comments_task(ticket_id: str) -> dict:
         comment_texts = [c.content for c in comments]
         summary = ai_service.summarize_comments(comment_texts)
 
-        # Update latest comment or store summary
         latest_comment = comments[-1]
         latest_comment.ai_summary = summary
         session.commit()
@@ -101,7 +108,7 @@ def assess_sprint_risk_task(sprint_id: str) -> dict:
         total_points = sum(t.estimate or 1 for t in tickets)
         completed_points = sum(t.estimate or 1 for t in tickets if t.status == "done")
 
-        days_left = 7  # Default if start/end date not set
+        days_left = 7
         if sprint.end_date:
             from datetime import datetime
             days_left = max(0, (sprint.end_date - datetime.utcnow()).days)
