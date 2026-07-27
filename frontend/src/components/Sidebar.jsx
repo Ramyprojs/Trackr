@@ -1,5 +1,5 @@
 import React from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Kanban,
@@ -32,16 +32,18 @@ export default function Sidebar({ openNewTicketModal }) {
   return (
     <aside className="w-56 bg-zinc-950 border-r border-zinc-800/80 flex flex-col h-screen shrink-0 select-none justify-between">
       <div>
-        {/* Brand Header */}
-        <div className="h-13 px-3.5 border-b border-zinc-800/80 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-6 h-6 rounded bg-zinc-800 border border-zinc-700/60 flex items-center justify-center shadow-xs">
-              <span className="font-mono font-bold text-xs text-zinc-200">T</span>
-            </div>
-            <span className="font-bold text-sm text-zinc-100 tracking-tight">
-              Trackr
-            </span>
-          </div>
+        {/* Brand Header — Animated Clickable Logo pointing to Home */}
+        <div className="h-14 px-3.5 border-b border-zinc-800/80 flex items-center justify-between">
+          <Link to="/" title="Home">
+            <motion.img
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ duration: 0.15 }}
+              src="/logo.png"
+              alt="Home"
+              className="h-8 w-auto object-contain cursor-pointer drop-shadow-sm"
+            />
+          </Link>
           <span className="px-1.5 py-0.5 text-[10px] font-mono text-zinc-500 bg-zinc-900 border border-zinc-800 rounded">
             v1.0
           </span>

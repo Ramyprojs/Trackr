@@ -13,10 +13,10 @@ function ProtectedRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs text-slate-400 font-medium">Loading Trackr workspace...</p>
+          <img src="/logo.png" alt="Loading" className="h-8 w-auto animate-pulse" />
+          <p className="text-xs text-zinc-400 font-medium">Loading workspace...</p>
         </div>
       </div>
     )

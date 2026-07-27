@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, Lock, Mail, User, AlertCircle, Sparkles, CheckCircle2, Github, Linkedin, ShieldCheck, Zap } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { ArrowRight, Lock, Mail, User, AlertCircle, Sparkles, Github, Linkedin, Zap } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 export default function Login() {
@@ -48,14 +48,18 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col justify-between p-6 md:p-10 selection:bg-zinc-800 selection:text-zinc-100">
-      {/* Top Header Navigation */}
+      {/* Top Header Navigation — Clickable Animated Logo */}
       <header className="w-full max-w-6xl mx-auto flex items-center justify-between py-2">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-700/80 flex items-center justify-center shadow-sm">
-            <span className="font-mono font-bold text-sm text-zinc-100">T</span>
-          </div>
-          <span className="font-bold text-base tracking-tight text-zinc-100">Trackr</span>
-        </div>
+        <Link to="/" title="Home">
+          <motion.img
+            whileHover={{ scale: 1.05, filter: 'brightness(1.15)' }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            src="/logo.png"
+            alt="Home"
+            className="h-9 md:h-11 w-auto object-contain cursor-pointer drop-shadow-md"
+          />
+        </Link>
 
         {/* Social / Author Links */}
         <div className="flex items-center gap-3">
@@ -92,7 +96,7 @@ export default function Login() {
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full text-xs font-medium text-zinc-400">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>AI-Powered Linear / Jira Alternative</span>
+            <span>AI-Powered Project Management Platform</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-100 leading-tight">
@@ -100,7 +104,7 @@ export default function Login() {
           </h1>
 
           <p className="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-xl">
-            Trackr combines high-density Kanban workflows with background Gemini AI automation: automated ticket labeling, comment thread summaries, and sprint risk prediction.
+            Combines high-density Kanban workflows with background Gemini AI automation: automated ticket labeling, comment thread summaries, and sprint risk prediction.
           </p>
 
           {/* Feature Highlights Grid */}
@@ -127,7 +131,7 @@ export default function Login() {
           </div>
         </motion.div>
 
-        {/* Right Column — Authentic Auth Form Card */}
+        {/* Right Column — Auth Form Card */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -251,7 +255,7 @@ export default function Login() {
 
       {/* Footer with Hyperlinks */}
       <footer className="w-full max-w-6xl mx-auto pt-6 border-t border-zinc-800/60 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-500 gap-3">
-        <p>© 2026 Trackr Inc. Built with FastAPI, React & Gemini AI.</p>
+        <p>© 2026 Built with FastAPI, React & Gemini AI.</p>
         <div className="flex items-center gap-4 font-medium">
           <a
             href="https://github.com/Ramyprojs"
