@@ -44,19 +44,7 @@ async def update_ai_config(
 
     # Dynamically update settings & re-initialize AI service at runtime
     settings.GEMINI_API_KEY = key
-    ai_service.api_key = key
-    ai_service._initialized = False
-
-    try:
-        import google.generativeai as genai
-        genai.configure(api_key=key)
-        ai_service.model = genai.GenerativeModel(ai_service.model_name)
-        ai_service._initialized = True
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to validate Gemini API key: {str(e)}",
-        )
+    ai_service.init_sdk(key)
 
     return AIConfigResponse(
         has_api_key=True,

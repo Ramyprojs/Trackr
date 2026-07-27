@@ -1,11 +1,23 @@
 import json
 import logging
 from typing import List, Dict, Any, Optional
-import google.generativeai as genai
 
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
+
+# Try modern google.genai SDK first, fall back to google.generativeai
+genai_client = None
+genai_legacy = None
+
+try:
+    from google import genai
+    genai_client = genai
+except ImportError:
+    try:
+        import google.generativeai as genai_legacy
+    except ImportError:
+        logger.warning("No Google Gemini SDK found. Running in Heuristic Mode.")
 
 
 class AIService:
@@ -14,15 +26,54 @@ class AIService:
         self.api_key = settings.GEMINI_API_KEY
         self.model_name = settings.GEMINI_MODEL or "gemini-1.5-flash"
         self._initialized = False
+        self.client = None
 
         if self.api_key and self.api_key != "your_gemini_api_key_here":
+            self.init_sdk(self.api_key)
+
+    def init_sdk(self, key: str):
+        self.api_key = key
+        self._initialized = False
+
+        if genai_client is not None:
             try:
-                genai.configure(api_key=self.api_key)
-                self.model = genai.GenerativeModel(self.model_name)
+                self.client = genai_client.Client(api_key=key)
                 self._initialized = True
-                logger.info("Gemini AI service initialized successfully")
+                logger.info("Initialized modern google.genai Client")
+                return
             except Exception as e:
-                logger.warning(f"Failed to initialize Gemini AI SDK: {e}")
+                logger.warning(f"Failed to initialize google.genai Client: {e}")
+
+        if genai_legacy is not None:
+            try:
+                genai_legacy.configure(api_key=key)
+                self.client = genai_legacy.GenerativeModel(self.model_name)
+                self._initialized = True
+                logger.info("Initialized legacy google.generativeai SDK")
+                return
+            except Exception as e:
+                logger.warning(f"Failed to initialize legacy google.generativeai SDK: {e}")
+
+    def generate_text(self, prompt: str) -> Optional[str]:
+        if not self._initialized or not self.client:
+            return None
+
+        try:
+            # Modern SDK
+            if genai_client is not None and hasattr(self.client, 'models'):
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=prompt,
+                )
+                return response.text.strip()
+            # Legacy SDK
+            elif genai_legacy is not None and hasattr(self.client, 'generate_content'):
+                response = self.client.generate_content(prompt)
+                return response.text.strip()
+        except Exception as e:
+            logger.error(f"Gemini AI generation error: {e}")
+
+        return None
 
     def triage_ticket(self, title: str, description: str) -> Dict[str, Any]:
         """Suggest labels, priority, and story point estimate for a ticket."""
@@ -43,11 +94,9 @@ Return ONLY valid JSON matching this schema:
   "estimate": 3
 }}
 """
-        if self._initialized:
+        text = self.generate_text(prompt)
+        if text:
             try:
-                response = self.model.generate_content(prompt)
-                text = response.text.strip()
-                # Remove markdown code block fences if present
                 if text.startswith("```json"):
                     text = text[7:]
                 if text.startswith("```"):
@@ -61,7 +110,7 @@ Return ONLY valid JSON matching this schema:
                     "estimate": data.get("estimate", 2),
                 }
             except Exception as e:
-                logger.error(f"Gemini API triage call failed: {e}")
+                logger.error(f"Failed to parse Gemini triage JSON: {e}")
 
         # Intelligent Heuristic Fallback if Gemini key is missing or call fails
         labels = ["triage-auto"]
@@ -94,12 +143,9 @@ Summarize the following discussion thread on a project ticket into a single clea
 
 {combined_text}
 """
-        if self._initialized:
-            try:
-                response = self.model.generate_content(prompt)
-                return response.text.strip()
-            except Exception as e:
-                logger.error(f"Gemini API comment summary call failed: {e}")
+        text = self.generate_text(prompt)
+        if text:
+            return text
 
         return f"Discussion summary ({len(comments)} comments): Key updates discussed on status and implementation details."
 
@@ -114,6 +160,7 @@ Summarize the following discussion thread on a project ticket into a single clea
     ) -> Dict[str, Any]:
         """Analyze sprint progress and return risk assessment."""
         remaining_points = max(0, total_points - completed_points)
+
         # Heuristic scoring formula
         if days_left <= 0:
             risk_level = "critical" if open_tickets > 0 else "low"
@@ -134,15 +181,9 @@ Total Points: {total_points}, Completed Points: {completed_points}
 Days Remaining: {days_left}
 Calculated Risk Level: {risk_level}
 """
-
-        explanation = f"Sprint is at {risk_level} risk: {open_tickets} of {total_tickets} tickets remain open with {remaining_points} story points left and {days_left} days remaining."
-
-        if self._initialized:
-            try:
-                response = self.model.generate_content(prompt)
-                explanation = response.text.strip()
-            except Exception as e:
-                logger.error(f"Gemini API sprint risk call failed: {e}")
+        explanation = self.generate_text(prompt)
+        if not explanation:
+            explanation = f"Sprint is at {risk_level} risk: {open_tickets} of {total_tickets} tickets remain open with {remaining_points} story points left and {days_left} days remaining."
 
         return {"risk_score": risk_level, "risk_reason": explanation}
 
