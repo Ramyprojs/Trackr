@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Sparkles, Kanban, ListFilter, Zap, ArrowRight, ArrowLeft, CheckCircle2, HelpCircle } from 'lucide-react'
+import { X, Sparkles, Kanban, ListFilter, Zap, ArrowRight, ArrowLeft, CheckCircle2, HelpCircle, Key, ExternalLink } from 'lucide-react'
 
 const STEPS = [
   {
@@ -30,6 +30,14 @@ const STEPS = [
     description:
       'Click "+ New Issue" in the sidebar to create an issue — Gemini AI auto-triages it by predicting priority, labels, and story points. On multi-comment threads, click "Summarize" to get a 1-sentence action summary.',
     highlight: 'Tip: Try creating a new issue to watch AI triage run live!',
+  },
+  {
+    icon: Key,
+    title: '5. Adding Your Free Gemini API Key',
+    description:
+      'To enable live Gemini LLM AI responses in your workspace: 1) Go to aistudio.google.com/app/apikey 2) Click "Create API key" 3) Copy key starting with AIzaSy... 4) Paste key in the Settings & AI tab.',
+    highlight: 'Tip: Google AI Studio key generation is 100% free with no credit card required.',
+    link: 'https://aistudio.google.com/app/apikey',
   },
 ]
 
@@ -79,6 +87,17 @@ export default function TutorialModal({ isOpen, onClose }) {
             <div>
               <h3 className="text-sm font-bold text-zinc-100 mb-1">{step.title}</h3>
               <p className="text-xs text-zinc-300 leading-relaxed">{step.description}</p>
+              {step.link && (
+                <a
+                  href={step.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 text-xs font-medium text-sky-400 hover:underline inline-flex items-center gap-1"
+                >
+                  <span>Open Google AI Studio Key Generator</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
             </div>
           </div>
 

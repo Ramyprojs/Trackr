@@ -7,6 +7,7 @@ import Layout from './components/Layout'
 import BoardView from './pages/BoardView'
 import TableView from './pages/TableView'
 import SprintView from './pages/SprintView'
+import SettingsView from './pages/SettingsView'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -48,6 +49,7 @@ export default function App() {
             <Route index element={<BoardView />} />
             <Route path="list" element={<TableView />} />
             <Route path="sprints" element={<SprintView />} />
+            <Route path="settings" element={<SettingsView />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -5,6 +5,7 @@ import {
   Kanban,
   ListFilter,
   Zap,
+  Settings,
   ChevronDown,
   Plus,
   Github,
@@ -27,6 +28,7 @@ export default function Sidebar({ openNewTicketModal }) {
     { path: '/', label: 'Board', icon: Kanban, end: true },
     { path: '/list', label: 'List', icon: ListFilter, end: false },
     { path: '/sprints', label: 'Sprints & Risk', icon: Zap, end: false },
+    { path: '/settings', label: 'Settings & AI', icon: Settings, end: false },
   ]
 
   return (
