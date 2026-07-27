@@ -1,8 +1,8 @@
 import React from 'react'
-import { LogOut, Search, Github, Linkedin } from 'lucide-react'
+import { LogOut, Search, Github, Linkedin, HelpCircle } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
-export default function Header({ searchFilter, setSearchFilter }) {
+export default function Header({ searchFilter, setSearchFilter, openTutorial }) {
   const { user, currentProject, logout } = useAuth()
 
   return (
@@ -21,7 +21,7 @@ export default function Header({ searchFilter, setSearchFilter }) {
         </div>
       </div>
 
-      {/* Project Banner, Author Links & User Profile */}
+      {/* Project Banner, Quick Tour & Profile */}
       <div className="flex items-center gap-3">
         {currentProject && (
           <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-zinc-900 border border-zinc-800 rounded-md">
@@ -30,6 +30,18 @@ export default function Header({ searchFilter, setSearchFilter }) {
               {currentProject.key}
             </span>
           </div>
+        )}
+
+        {/* Quick Tour Button */}
+        {openTutorial && (
+          <button
+            onClick={openTutorial}
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-md text-xs font-medium text-zinc-300 hover:text-zinc-100 transition cursor-pointer"
+            title="Quick Navigation Guide"
+          >
+            <HelpCircle className="w-3.5 h-3.5 text-zinc-400" />
+            <span className="hidden sm:inline">Guide</span>
+          </button>
         )}
 
         {/* Hyperlinks */}

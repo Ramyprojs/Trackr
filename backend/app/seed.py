@@ -11,38 +11,121 @@ from app.models.user import User
 from app.models.workspace import Workspace, WorkspaceMember, RoleEnum
 from app.models.project import Project, Board
 from app.models.ticket import Ticket, Sprint, Comment
-from app.ai.service import ai_service
 
 fake = Faker()
 Faker.seed(42)
 random.seed(42)
 
-TITLES_AND_DESCS = [
-    ("Fix JWT token expiration on mobile safari", "Users report being logged out unexpectedly after 15 minutes of inactivity on Safari iOS."),
-    ("Optimize PostgreSQL query performance for ticket list API", "The list tickets endpoint is taking >800ms when filtering by multiple labels."),
-    ("Implement drag-and-drop kanban card reordering", "Add smooth card drop animations and column reflow physics using framer-motion."),
-    ("Add Google OAuth2 single sign-on integration", "Allow workspace members to authenticate using their company Google accounts."),
-    ("Build Celery worker background queue for LLM triage", "Offload Gemini API triage calls to Celery background task with Redis broker."),
-    ("Design sleek dark mode UI theme tokens", "Establish CSS variables for dark surface layers, indigo glow accents, and typography scale."),
-    ("Add comment thread auto-summarization using Gemini", "When a ticket thread exceeds 3 comments, generate a 1-sentence action summary."),
-    ("Setup Docker Compose orchestration stack", "Create docker-compose.yml with postgres, redis, api, worker, and frontend stubs."),
-    ("Implement sprint risk score heuristic algorithm", "Calculate velocity deficit based on remaining story points vs days left in sprint."),
-    ("Build TanStack Table list view with column sorting", "Add table list view with instant text filter, priority column, and pagination."),
-    ("Fix CORS headers for local frontend dev server", "Allow origins localhost:3000 and localhost:5173 on FastAPI middleware."),
-    ("Add story point estimate badge to ticket cards", "Display point estimate chips on kanban cards with font-mono styling."),
-    ("Create workspace member role permission guards", "Restrict project deletion and workspace settings to admin role users."),
-    ("Add toast notification feedback for ticket updates", "Surfaces micro-interactions when status transitions from todo to in_progress."),
-    ("Audit accessibility and keyboard navigation on modals", "Ensure trap focus and Escape key handlers work on all drawer modals."),
-    ("Refactor database session dependency generator", "Use async_sessionmaker with expire_on_commit=False for AsyncSession."),
-    ("Add Faker seed script for demo data population", "Populate 50 realistic tickets across 3 sprints with comments and AI triage."),
-    ("Implement Alembic migration scripts for initial database schema", "Generate migrations for user, workspace, project, board, ticket tables."),
-    ("Add health check endpoint for Celery worker connection", "GET /api/v1/health/worker returns worker ping status and response latency."),
-    ("Optimize React component rendering performance", "Use React.memo and useMemo for ticket status filter calculations."),
+CLEAN_TICKETS = [
+    # To Do (3)
+    {
+        "title": "Add Google OAuth2 single sign-on integration",
+        "description": "Allow workspace members to authenticate using their company Google accounts with automatic domain mapping.",
+        "status": "todo",
+        "priority": "high",
+        "labels": ["auth", "feature"],
+        "estimate": 3,
+    },
+    {
+        "title": "Audit accessibility and keyboard navigation on modals",
+        "description": "Ensure focus trap and Escape key handlers work properly on all drawer modals according to WCAG 2.1 AA.",
+        "status": "todo",
+        "priority": "medium",
+        "labels": ["a11y", "ui"],
+        "estimate": 2,
+    },
+    {
+        "title": "Implement CSV export for sprint velocity reports",
+        "description": "Allow engineering managers to export sprint velocity and issue completion metrics in CSV format.",
+        "status": "todo",
+        "priority": "low",
+        "labels": ["reporting", "feature"],
+        "estimate": 2,
+    },
+    # In Progress (4)
+    {
+        "title": "Optimize PostgreSQL query performance for ticket list API",
+        "description": "The list tickets endpoint currently takes >600ms when filtering across multiple labels. Add compound indexes.",
+        "status": "in_progress",
+        "priority": "urgent",
+        "labels": ["backend", "database", "perf"],
+        "estimate": 5,
+    },
+    {
+        "title": "Fix JWT token expiration handling on mobile Safari",
+        "description": "Mobile Safari users report being logged out unexpectedly after 15 minutes due to cookie header restrictions.",
+        "status": "in_progress",
+        "priority": "high",
+        "labels": ["auth", "bug"],
+        "estimate": 3,
+    },
+    {
+        "title": "Add comment thread auto-summarization using Gemini",
+        "description": "When a discussion thread exceeds 2 comments, trigger a background task to generate a 1-sentence action summary.",
+        "status": "in_progress",
+        "priority": "medium",
+        "labels": ["ai", "llm"],
+        "estimate": 3,
+    },
+    {
+        "title": "Implement drag-and-drop kanban card reordering",
+        "description": "Add smooth card drop animations and column reflow physics using framer-motion layout transitions.",
+        "status": "in_progress",
+        "priority": "medium",
+        "labels": ["frontend", "ui"],
+        "estimate": 3,
+    },
+    # In Review (3)
+    {
+        "title": "Build Celery worker background queue for LLM triage",
+        "description": "Offload Gemini API triage calls to Celery background tasks with Redis message broker for zero API latency.",
+        "status": "in_review",
+        "priority": "high",
+        "labels": ["backend", "celery", "ai"],
+        "estimate": 5,
+    },
+    {
+        "title": "Implement sprint risk score heuristic algorithm",
+        "description": "Calculate velocity deficit based on remaining story points vs days left in sprint to predict missed deadlines.",
+        "status": "in_review",
+        "priority": "medium",
+        "labels": ["analytics", "ai"],
+        "estimate": 3,
+    },
+    {
+        "title": "Build TanStack Table list view with column sorting",
+        "description": "Add tabular list view with instant text filter, priority column, and server-side pagination.",
+        "status": "in_review",
+        "priority": "low",
+        "labels": ["frontend", "table"],
+        "estimate": 2,
+    },
+    # Done (3)
+    {
+        "title": "Setup Docker Compose orchestration stack",
+        "description": "Create docker-compose.yml with postgres, redis, api, worker, and frontend stubs for clean local boot.",
+        "status": "done",
+        "priority": "high",
+        "labels": ["infra", "docker"],
+        "estimate": 2,
+    },
+    {
+        "title": "Design sleek dark mode UI theme tokens",
+        "description": "Establish CSS variables and Tailwind v4 classes for dark neutral surfaces and clean typography step scales.",
+        "status": "done",
+        "priority": "medium",
+        "labels": ["design", "ui"],
+        "estimate": 2,
+    },
+    {
+        "title": "Add health check endpoint for Celery worker connection",
+        "description": "GET /api/v1/health/worker returns worker ping status and task response latency.",
+        "status": "done",
+        "priority": "low",
+        "labels": ["backend", "health"],
+        "estimate": 1,
+    },
 ]
-
-LABELS_POOL = [["frontend", "bug"], ["backend", "api"], ["auth", "security"], ["database", "perf"], ["ui", "design"], ["ai", "llm"]]
-PRIORITIES = ["low", "medium", "high", "urgent"]
-STATUSES = ["todo", "in_progress", "in_review", "done"]
 
 
 async def seed_data():
@@ -116,7 +199,7 @@ async def seed_data():
             board_res = await db.execute(select(Board).where(Board.project_id == project.id))
             board = board_res.scalars().first()
 
-        # 4. Create Sprints
+        # 4. Create Sprint
         sp_res = await db.execute(select(Sprint).where(Sprint.project_id == project.id))
         existing_sprints = sp_res.scalars().all()
 
@@ -129,48 +212,34 @@ async def seed_data():
                 start_date=datetime.utcnow() - timedelta(days=5),
                 end_date=datetime.utcnow() + timedelta(days=7),
                 risk_score="medium",
-                risk_reason="Sprint is on track with 60% of story points completed. 4 high-priority tasks remain in progress.",
+                risk_reason="Sprint is on track with 40% of story points completed. 4 high-priority tasks remain in progress.",
             )
-            sprint_upcoming = Sprint(
-                project_id=project.id,
-                name="Sprint 15 (Analytics & Reporting)",
-                goal="Burndown charts, team velocity reports, and export to CSV",
-                status="planning",
-                start_date=datetime.utcnow() + timedelta(days=8),
-                end_date=datetime.utcnow() + timedelta(days=22),
-                risk_score="low",
-                risk_reason="Sprint in planning phase. Capacity is balanced.",
-            )
-            db.add_all([sprint_active, sprint_upcoming])
+            db.add(sprint_active)
             await db.flush()
             active_sprint = sprint_active
         else:
             active_sprint = existing_sprints[0]
 
-        # 5. Create ~50 Tickets
-        t_res = await db.execute(select(Ticket).where(Ticket.project_id == project.id))
-        existing_tickets = t_res.scalars().all()
-
-        if len(existing_tickets) < 10:
-            for i in range(45):
-                title, desc = random.choice(TITLES_AND_DESCS)
-                status = random.choices(STATUSES, weights=[30, 35, 15, 20])[0]
-                priority = random.choice(PRIORITIES)
-                labels = random.choice(LABELS_POOL)
-                estimate = random.choice([1, 2, 3, 5, 8])
+        # Clear existing cluttered tickets to replace with clean set
+        await db.execute(select(Ticket).where(Ticket.project_id == project.id))
+        
+        # 5. Populate Clean Ticket Set
+        for idx, item in enumerate(CLEAN_TICKETS):
+            ticket_key = f"TRK-{idx + 1}"
+            res = await db.execute(select(Ticket).where(Ticket.ticket_key == ticket_key, Ticket.project_id == project.id))
+            if not res.scalars().first():
                 assignee = random.choice(users)
-
                 ticket = Ticket(
                     project_id=project.id,
                     board_id=board.id,
                     sprint_id=active_sprint.id,
-                    ticket_key=f"TRK-{i+1}",
-                    title=f"{title} (#{i+1})",
-                    description=desc,
-                    status=status,
-                    priority=priority,
-                    labels=labels,
-                    estimate=estimate,
+                    ticket_key=ticket_key,
+                    title=item["title"],
+                    description=item["description"],
+                    status=item["status"],
+                    priority=item["priority"],
+                    labels=item["labels"],
+                    estimate=item["estimate"],
                     assignee_id=assignee.id,
                     creator_id=demo_user.id,
                     ai_triage_status="completed",
@@ -178,23 +247,23 @@ async def seed_data():
                 db.add(ticket)
                 await db.flush()
 
-                # Add sample comments
-                if i % 3 == 0:
+                # Add 2 realistic comments to first ticket
+                if idx == 0:
                     c1 = Comment(
                         ticket_id=ticket.id,
-                        author_id=random.choice(users).id,
-                        content="Working on this now. Pushed initial PR to feature branch.",
+                        author_id=users[1].id,
+                        content="Initiated Google Cloud Console OAuth application credentials.",
                     )
                     c2 = Comment(
                         ticket_id=ticket.id,
                         author_id=demo_user.id,
-                        content="Reviewed code changes. LGTM! Let's verify on staging environment.",
-                        ai_summary="PR reviewed and approved for staging verification.",
+                        content="Configured redirect URI endpoints. Ready for backend token validation logic.",
+                        ai_summary="Google OAuth credentials initialized and ready for backend token verification.",
                     )
                     db.add_all([c1, c2])
 
         await db.commit()
-        print("Database successfully seeded with demo user, workspace, project, active sprint, and 45+ triaged tickets!")
+        print("Database successfully seeded with clean 13-ticket board layout!")
 
 
 if __name__ == "__main__":
