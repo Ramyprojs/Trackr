@@ -257,7 +257,7 @@ export default function Login() {
 
       {/* Footer with Hyperlinks */}
       <footer className="w-full max-w-6xl mx-auto pt-6 border-t border-zinc-800/60 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-500 gap-3">
-        <p>© 2026 Built with FastAPI, React & Gemini AI.</p>
+        <p>© 2026 All rights reserved.</p>
         <div className="flex items-center gap-4 font-medium">
           <a
             href="https://github.com/Ramyprojs"
