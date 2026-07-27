@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   X,
   Sparkles,
   Tag,
   MessageSquare,
   Send,
-  Clock,
-  User,
-  CheckCircle2,
-  AlertCircle,
-  TrendingUp,
 } from 'lucide-react'
 import { apiFetch } from '../services/api'
 
@@ -32,7 +27,6 @@ export default function TicketDetailModal({ ticket: initialTicket, onClose, onUp
     try {
       const data = await apiFetch(`/tickets/${ticket.id}/comments`)
       setComments(data)
-      // Extract latest AI summary if present
       const latestWithSummary = data.slice().reverse().find((c) => c.ai_summary)
       if (latestWithSummary) {
         setAiSummary(latestWithSummary.ai_summary)
@@ -100,23 +94,24 @@ export default function TicketDetailModal({ ticket: initialTicket, onClose, onUp
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm">
       <motion.div
-        initial={{ opacity: 0, scale: 0.96 }}
+        initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.96 }}
-        className="w-full max-w-3xl max-h-[85vh] bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+        exit={{ opacity: 0, scale: 0.98 }}
+        transition={{ duration: 0.15 }}
+        className="w-full max-w-2xl max-h-[85vh] bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden text-zinc-100"
       >
         {/* Modal Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/40">
-          <div className="flex items-center gap-3">
-            <span className="px-2.5 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-mono font-bold text-xs rounded-lg">
+        <div className="p-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-950/60">
+          <div className="flex items-center gap-2.5">
+            <span className="px-2 py-0.5 bg-zinc-800 border border-zinc-700/60 font-mono font-medium text-xs text-zinc-300 rounded">
               {ticket.ticket_key}
             </span>
             <select
               value={ticket.status}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1 text-xs font-semibold text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
+              className="bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs font-medium text-zinc-200 focus:outline-none focus:border-zinc-700 cursor-pointer"
             >
               <option value="todo">To Do</option>
               <option value="in_progress">In Progress</option>
@@ -129,136 +124,132 @@ export default function TicketDetailModal({ ticket: initialTicket, onClose, onUp
             <button
               onClick={handleRunTriage}
               disabled={isTriaging}
-              className="px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition cursor-pointer"
+              className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 text-xs font-medium rounded flex items-center gap-1.5 transition cursor-pointer"
             >
               <Sparkles className={`w-3.5 h-3.5 ${isTriaging ? 'animate-spin' : ''}`} />
-              <span>{isTriaging ? 'Triaging...' : 'Re-run AI Triage'}</span>
+              <span>{isTriaging ? 'Triaging...' : 'Re-triage Issue'}</span>
             </button>
 
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+              className="p-1 text-zinc-400 hover:text-zinc-200 rounded hover:bg-zinc-800 transition"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
         {/* Content Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-5 space-y-5">
           {/* Title & Description */}
           <div>
-            <h1 className="text-xl font-bold text-slate-100 mb-2 leading-tight">
+            <h1 className="text-lg font-bold text-zinc-100 mb-2 leading-snug">
               {ticket.title}
             </h1>
-            <p className="text-sm text-slate-300 whitespace-pre-wrap leading-relaxed bg-slate-950/40 p-4 rounded-xl border border-slate-800/60">
+            <p className="text-xs text-zinc-300 whitespace-pre-wrap leading-relaxed bg-zinc-950/60 p-3.5 rounded-lg border border-zinc-800/80">
               {ticket.description || 'No description provided.'}
             </p>
           </div>
 
           {/* AI Triaged Metadata Chips */}
-          <div className="p-4 bg-slate-950/60 border border-slate-800/80 rounded-xl space-y-3">
+          <div className="p-3.5 bg-zinc-950/80 border border-zinc-800 rounded-lg space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-zinc-400" />
                 AI Triage Classification
               </span>
-              <span className="text-[11px] text-slate-500 font-mono">
+              <span className="text-[11px] text-zinc-400 font-mono">
                 {ticket.estimate} Story Points
               </span>
             </div>
 
-            <div className="flex flex-wrap gap-2 items-center">
-              <span className="text-xs text-slate-400 mr-1">Priority:</span>
-              <span className="px-2.5 py-0.5 text-xs font-bold uppercase rounded-md bg-indigo-500/10 border border-indigo-500/30 text-indigo-300">
+            <div className="flex flex-wrap gap-2 items-center text-xs">
+              <span className="text-zinc-500">Priority:</span>
+              <span className="px-2 py-0.5 text-[11px] font-medium uppercase rounded bg-zinc-900 border border-zinc-800 text-zinc-200">
                 {ticket.priority}
               </span>
 
-              <span className="text-xs text-slate-400 ml-3 mr-1">Labels:</span>
+              <span className="text-zinc-500 ml-2">Labels:</span>
               {ticket.labels && ticket.labels.length > 0 ? (
                 ticket.labels.map((l, i) => (
                   <span
                     key={i}
-                    className="px-2.5 py-0.5 bg-slate-800 text-slate-200 text-xs rounded-full border border-slate-700 flex items-center gap-1"
+                    className="px-2 py-0.5 bg-zinc-900 text-zinc-300 text-[11px] rounded border border-zinc-800 flex items-center gap-1"
                   >
-                    <Tag className="w-3 h-3 text-indigo-400" />
+                    <Tag className="w-3 h-3 text-zinc-500" />
                     {l}
                   </span>
                 ))
               ) : (
-                <span className="text-xs text-slate-500 italic">No labels</span>
+                <span className="text-zinc-500 italic">None</span>
               )}
             </div>
           </div>
 
           {/* AI Thread Summary */}
           {aiSummary && (
-            <motion.div
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-4 bg-gradient-to-r from-indigo-950/40 via-purple-950/20 to-slate-900 border border-indigo-500/30 rounded-xl"
-            >
-              <div className="flex items-center gap-2 mb-1.5 text-indigo-300 font-semibold text-xs uppercase tracking-wider">
-                <Sparkles className="w-4 h-4 text-indigo-400" />
-                <span>AI Discussion Summary</span>
+            <div className="p-3.5 bg-zinc-950 border border-zinc-800 rounded-lg space-y-1">
+              <div className="flex items-center gap-1.5 text-zinc-300 font-semibold text-xs">
+                <Sparkles className="w-3.5 h-3.5 text-zinc-400" />
+                <span>Discussion Thread Summary</span>
               </div>
-              <p className="text-xs text-slate-200 leading-relaxed italic">{aiSummary}</p>
-            </motion.div>
+              <p className="text-xs text-zinc-300 leading-relaxed italic">{aiSummary}</p>
+            </div>
           )}
 
           {/* Comments Section */}
-          <div className="space-y-4 pt-2">
+          <div className="space-y-3 pt-1">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-purple-400" />
-                Activity & Discussion ({comments.length})
+              <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                <MessageSquare className="w-3.5 h-3.5 text-zinc-400" />
+                Activity ({comments.length})
               </h3>
               {comments.length >= 2 && (
                 <button
                   onClick={handleSummarize}
                   disabled={isSummarizing}
-                  className="text-xs text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1 cursor-pointer"
+                  className="text-xs text-zinc-400 hover:text-zinc-200 font-medium flex items-center gap-1 cursor-pointer"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>{isSummarizing ? 'Summarizing...' : 'Summarize Thread'}</span>
+                  <Sparkles className="w-3 h-3" />
+                  <span>{isSummarizing ? 'Summarizing...' : 'Summarize'}</span>
                 </button>
               )}
             </div>
 
-            <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+            <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
               {comments.map((c) => (
                 <div
                   key={c.id}
-                  className="p-3 bg-slate-950/50 border border-slate-800/80 rounded-xl text-xs space-y-1"
+                  className="p-3 bg-zinc-950/60 border border-zinc-800/80 rounded-lg text-xs space-y-1"
                 >
-                  <div className="flex items-center justify-between text-slate-400">
-                    <span className="font-semibold text-slate-200">
+                  <div className="flex items-center justify-between text-zinc-400">
+                    <span className="font-semibold text-zinc-200">
                       {c.author?.full_name || 'Member'}
                     </span>
-                    <span className="text-[10px]">
+                    <span className="text-[10px] font-mono text-zinc-500">
                       {new Date(c.created_at).toLocaleTimeString([], {
                         hour: '2-digit',
                         minute: '2-digit',
                       })}
                     </span>
                   </div>
-                  <p className="text-slate-300 leading-relaxed">{c.content}</p>
+                  <p className="text-zinc-300 leading-relaxed">{c.content}</p>
                 </div>
               ))}
             </div>
 
-            {/* Comment Form */}
-            <form onSubmit={handleAddComment} className="flex gap-2 pt-2">
+            {/* Comment Input Form */}
+            <form onSubmit={handleAddComment} className="flex gap-2 pt-1">
               <input
                 type="text"
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Write a comment or update..."
-                className="flex-1 px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+                placeholder="Write a comment..."
+                className="flex-1 px-3 py-1.5 bg-zinc-950 border border-zinc-800 rounded-md text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-700 transition"
               />
               <button
                 type="submit"
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 transition cursor-pointer"
+                className="px-3 py-1.5 bg-zinc-100 hover:bg-white text-zinc-900 text-xs font-semibold rounded-md flex items-center gap-1 transition cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>Post</span>

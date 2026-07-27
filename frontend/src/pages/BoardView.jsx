@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { apiFetch } from '../services/api'
 import KanbanBoard from '../components/KanbanBoard'
 import TicketDetailModal from '../components/TicketDetailModal'
-import { Sparkles, RefreshCw } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 
 export default function BoardView() {
   const { searchFilter, openNewTicketModal } = useOutletContext()
@@ -45,32 +45,30 @@ export default function BoardView() {
   })
 
   return (
-    <div className="h-full flex flex-col space-y-4">
-      {/* Board Controls Bar */}
+    <div className="h-full flex flex-col space-y-3">
+      {/* Header Bar */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-            <span>Kanban Workflow</span>
-            <span className="text-xs px-2 py-0.5 bg-slate-800 text-slate-400 font-mono rounded-full font-medium">
-              {filteredTickets.length} tickets
-            </span>
-          </h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-sm font-bold text-zinc-100">Board</h1>
+          <span className="text-xs px-2 py-0.5 bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono rounded">
+            {filteredTickets.length} issues
+          </span>
         </div>
 
         <button
           onClick={fetchTickets}
-          className="p-1.5 bg-slate-900 border border-slate-800 text-slate-400 hover:text-white rounded-lg transition cursor-pointer"
-          title="Refresh Tickets"
+          className="p-1.5 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 rounded transition cursor-pointer"
+          title="Refresh"
         >
-          <RefreshCw className="w-4 h-4" />
+          <RefreshCw className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      {/* Kanban Board Container */}
+      {/* Board */}
       <div className="flex-1 min-h-0">
         {loading ? (
-          <div className="h-64 flex items-center justify-center">
-            <div className="w-7 h-7 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+          <div className="h-48 flex items-center justify-center">
+            <div className="w-5 h-5 border-2 border-zinc-400 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <KanbanBoard
@@ -81,7 +79,6 @@ export default function BoardView() {
         )}
       </div>
 
-      {/* Ticket Detail Drawer/Modal */}
       {selectedTicket && (
         <TicketDetailModal
           ticket={selectedTicket}

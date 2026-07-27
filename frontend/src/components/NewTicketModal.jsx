@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { X, Sparkles, Plus, AlertCircle } from 'lucide-react'
+import { X, Plus, AlertCircle } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { apiFetch } from '../services/api'
 
@@ -44,48 +44,49 @@ export default function NewTicketModal({ onClose, onCreated }) {
       if (onCreated) onCreated(ticket)
       onClose()
     } catch (err) {
-      setError(err.message || 'Failed to create ticket')
+      setError(err.message || 'Failed to create issue')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm">
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 relative overflow-hidden"
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.98 }}
+        transition={{ duration: 0.15 }}
+        className="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl p-5 relative overflow-hidden text-zinc-100"
       >
-        <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+        <div className="flex items-center justify-between pb-3.5 border-b border-zinc-800">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-300">
               <Plus className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white leading-tight">Create New Ticket</h2>
-              <p className="text-xs text-slate-400">AI triage will automatically suggest labels & points</p>
+              <h2 className="text-sm font-bold text-zinc-100 leading-tight">Create Issue</h2>
+              <p className="text-[11px] text-zinc-400">AI triage automatically tags priority & points</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            className="p-1 text-zinc-400 hover:text-zinc-200 rounded hover:bg-zinc-800 transition"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {error && (
-          <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-center gap-2">
+          <div className="mt-3 p-3 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-4 space-y-3.5">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">
+            <label className="block text-xs font-medium text-zinc-300 mb-1">
               Title
             </label>
             <input
@@ -93,33 +94,33 @@ export default function NewTicketModal({ onClose, onCreated }) {
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Implement OAuth2 login flow with Google"
-              className="w-full px-3.5 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+              placeholder="e.g. Implement OAuth2 authentication flow"
+              className="w-full px-3 py-1.5 bg-zinc-950 border border-zinc-800 rounded-md text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-700 transition"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">
+            <label className="block text-xs font-medium text-zinc-300 mb-1">
               Description
             </label>
             <textarea
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Provide technical context, steps to reproduce, or acceptance criteria..."
-              className="w-full px-3.5 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition resize-none"
+              placeholder="Context, technical requirements, or reproduction steps..."
+              className="w-full px-3 py-1.5 bg-zinc-950 border border-zinc-800 rounded-md text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-700 transition resize-none"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">
-                Initial Priority
+              <label className="block text-xs font-medium text-zinc-300 mb-1">
+                Priority
               </label>
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
-                className="w-full px-3.5 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
+                className="w-full px-2.5 py-1.5 bg-zinc-950 border border-zinc-800 rounded-md text-xs text-zinc-200 focus:outline-none focus:border-zinc-700 cursor-pointer"
               >
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
@@ -129,45 +130,38 @@ export default function NewTicketModal({ onClose, onCreated }) {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">
-                Estimate (Points)
+              <label className="block text-xs font-medium text-zinc-300 mb-1">
+                Estimate
               </label>
               <select
                 value={estimate}
                 onChange={(e) => setEstimate(e.target.value)}
-                className="w-full px-3.5 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
+                className="w-full px-2.5 py-1.5 bg-zinc-950 border border-zinc-800 rounded-md text-xs text-zinc-200 focus:outline-none focus:border-zinc-700 cursor-pointer"
               >
-                <option value="1">1 pt — T-Shirt S</option>
-                <option value="2">2 pts — T-Shirt M</option>
-                <option value="3">3 pts — T-Shirt L</option>
-                <option value="5">5 pts — T-Shirt XL</option>
-                <option value="8">8 pts — Complex Task</option>
+                <option value="1">1 point</option>
+                <option value="2">2 points</option>
+                <option value="3">3 points</option>
+                <option value="5">5 points</option>
+                <option value="8">8 points</option>
               </select>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-xs text-indigo-400">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>AI Triage Active</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 rounded-xl transition"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow-lg shadow-indigo-600/20 transition cursor-pointer"
-              >
-                {loading ? 'Creating...' : 'Create Ticket'}
-              </button>
-            </div>
+          <div className="pt-3 border-t border-zinc-800 flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-3 py-1.5 text-xs font-medium text-zinc-400 hover:text-zinc-200 rounded transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-1.5 bg-zinc-100 hover:bg-white text-zinc-900 text-xs font-semibold rounded-md shadow-sm transition cursor-pointer"
+            >
+              {loading ? 'Creating...' : 'Create Issue'}
+            </button>
           </div>
         </form>
       </motion.div>

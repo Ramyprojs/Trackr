@@ -39,7 +39,8 @@ class Settings(BaseSettings):
     def get_database_url(self) -> str:
         if self.DATABASE_URL:
             return self.DATABASE_URL
-        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        # Default to SQLite for zero-config local execution if env DATABASE_URL is not set
+        return "sqlite+aiosqlite:///./trackr.db"
 
     def get_redis_url(self) -> str:
         if self.REDIS_URL:

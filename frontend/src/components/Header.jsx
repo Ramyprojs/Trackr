@@ -1,56 +1,53 @@
 import React from 'react'
-import { Sparkles, LogOut, User, Search, Bell } from 'lucide-react'
+import { LogOut, Search } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 export default function Header({ searchFilter, setSearchFilter }) {
   const { user, currentProject, logout } = useAuth()
 
   return (
-    <header className="h-14 border-b border-slate-800/80 bg-slate-900/40 backdrop-blur-md px-6 flex items-center justify-between shrink-0 select-none">
+    <header className="h-13 border-b border-zinc-800/80 bg-zinc-950 px-4 flex items-center justify-between shrink-0 select-none">
       {/* Search Input */}
-      <div className="flex items-center gap-4 flex-1 max-w-md">
+      <div className="flex items-center gap-3 flex-1 max-w-sm">
         <div className="relative w-full">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchFilter || ''}
             onChange={(e) => setSearchFilter(e.target.value)}
-            placeholder="Search tickets by title, key (TRK-1), or labels..."
-            className="w-full pl-9 pr-4 py-1.5 bg-slate-950/50 border border-slate-800 rounded-lg text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+            placeholder="Search issues (e.g. TRK-1)..."
+            className="w-full pl-8 pr-3 py-1.5 bg-zinc-900 border border-zinc-800 rounded-md text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-700 transition-colors"
           />
         </div>
       </div>
 
       {/* Project Banner & User Profile */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         {currentProject && (
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-slate-800/60 border border-slate-700/50 rounded-lg">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-xs font-semibold text-slate-300">
-              {currentProject.name} ({currentProject.key})
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-zinc-900 border border-zinc-800 rounded-md">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="text-xs font-mono font-medium text-zinc-300">
+              {currentProject.key}
             </span>
           </div>
         )}
 
-        <div className="flex items-center gap-3 pl-4 border-l border-slate-800">
+        <div className="flex items-center gap-2.5 pl-3 border-l border-zinc-800">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 text-white font-bold text-xs flex items-center justify-center shadow-inner">
+            <div className="w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-200 font-bold text-[10px] flex items-center justify-center">
               {user?.full_name?.charAt(0) || 'U'}
             </div>
-            <div className="hidden md:block text-left">
-              <p className="text-xs font-semibold text-slate-200 leading-tight">
-                {user?.full_name || 'User'}
-              </p>
-              <p className="text-[10px] text-slate-500 leading-tight">{user?.email}</p>
-            </div>
+            <span className="hidden md:inline text-xs font-medium text-zinc-300">
+              {user?.full_name || 'User'}
+            </span>
           </div>
 
           <button
             onClick={logout}
             title="Sign out"
-            className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition cursor-pointer"
+            className="p-1 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900 rounded transition cursor-pointer"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
