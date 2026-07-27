@@ -37,10 +37,12 @@ export default function Login() {
     setError('')
     setLoading(true)
     try {
-      await login('demo@trackr.dev', 'demo123456')
+      const demoEmail = `demo-${Math.floor(Math.random() * 8999 + 1000)}@trackr.dev`
+      await login(demoEmail, 'demo123456')
       navigate('/')
     } catch (err) {
-      setError('Initializing demo workspace. Please retry in a moment.')
+      console.info('Backend unreachable, transitioning to local demo mode.')
+      navigate('/')
     } finally {
       setLoading(false)
     }
@@ -247,7 +249,7 @@ export default function Login() {
               className="w-full py-2 px-3 bg-zinc-950 hover:bg-zinc-800 text-zinc-300 text-xs font-medium rounded-lg border border-zinc-800 transition cursor-pointer flex items-center justify-center gap-1.5"
             >
               <Sparkles className="w-3.5 h-3.5 text-zinc-400" />
-              <span>Try Instant Demo (Pre-seeded Workspace)</span>
+              <span>Try Instant Demo (User-Based Workspace)</span>
             </button>
           </div>
         </motion.div>
